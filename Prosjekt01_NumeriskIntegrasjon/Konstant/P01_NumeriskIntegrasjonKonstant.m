@@ -97,7 +97,7 @@ while ~JoyMainSwitch
 
     % Tilordne målinger til variabler
     LysInit = Lys(1);
-    u(k) = Lys(k) - LysInit;
+    u(k) = Lys(k);
 
     if k==1
         % Spesifisering av initialverdier og parametere
@@ -170,11 +170,11 @@ legend('$\{u_k\}')
 
 t = T_s(1);
 U = 10;
-w = pi;
-u_est = U*sin(w*Tid-1)+10;
+w = 3.3;
+u_est = U*sin(w*Tid-1);
 Y = U/w;
 y_A = U/w + y(1);
-phi =- pi/2;
+phi = -pi/2;
 y_est = Y*sin(w*Tid + phi) + y_A;
 subplot(2,1,1)
 hold on
