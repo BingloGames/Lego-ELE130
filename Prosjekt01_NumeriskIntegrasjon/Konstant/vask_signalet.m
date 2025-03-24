@@ -1,22 +1,25 @@
-filename = 'P01_NumeriskIntegrasjonSinus.mat'; 
+filename = 'P01_chirp.mat'; 
 load(filename)
-elementer_vaskes_start = 110;
-elementer_vaskes_slutt = 263;
+elementer_vaskes_start = 1;
+elementer_vaskes_slutt = 93;
 
 %element_tid_start = Tid(1);
 
-%for i = 1:154 
+%for i = 1:154
 %    Tid(i) = Tid(i) - element_tid_start;
 %end
     
-%Tid = [Tid(elementer_vaskes_start:elementer_vaskes_slutt)];
-%Lys = [Lys(elementer_vaskes_start:elementer_vaskes_slutt)];
+Tid = [Tid(elementer_vaskes_start:elementer_vaskes_slutt)];
+Lys = [Lys(elementer_vaskes_start:elementer_vaskes_slutt)];
 likevekst_verdi = mean(Lys, "omitnan");
 
+Lys = Lys - likevekst_verdi;
+Tid = Tid - Tid(1);
 
-for i = 1:154 
-    Lys(i) = Lys(i) - likevekst_verdi;
-end
+%for i = 1:76 
+%    Lys(i) = Lys(i) - likevekst_verdi;
+%end
 
 
 plot(Tid, Lys)
+save('P01_chirp_justert.mat','Tid','Lys')

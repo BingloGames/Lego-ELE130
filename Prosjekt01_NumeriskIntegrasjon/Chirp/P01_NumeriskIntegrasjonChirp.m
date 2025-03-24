@@ -15,7 +15,12 @@
 clear; close all   % Alltid lurt å rydde workspace opp først
 online = false;     % Online mot EV3 eller mot lagrede data?
 plotting = false;  % Skal det plottes mens forsøket kjøres
-filename = 'P01_NumeriskIntegrasjonKonstant_gammel.mat';
+filename = 'P01_chirp_justert.mat';
+
+
+padrag_start = 20;
+padrag = padrag_start;
+
 
 if online
     
@@ -63,6 +68,9 @@ while ~JoyMainSwitch
             Tid(1) = 0;
         else
             Tid(k) = toc;
+            if Tid(k) > 2
+                padrag = padrag + ((100/13))*(Tid(k)-Tid(k-1));
+            end
         end
 
         % sensorer
@@ -96,7 +104,7 @@ while ~JoyMainSwitch
     % Gjør matematiske beregninger og motorkraftberegninger.
 
     % Tilordne målinger til variabler
-    LysInit = Lys(1);
+    LysInit = 21;
     u(k) = Lys(k);
 
     if k==1
@@ -116,7 +124,7 @@ while ~JoyMainSwitch
     if online
         % Setter pådragsdata mot EV3
         % (slett de motorene du ikke bruker)
-        motorA.Speed = 30;%u_A(k);
+        motorA.Speed = padrag;%u_A(k);
         start(motorA)
     end
     
@@ -137,12 +145,12 @@ while ~JoyMainSwitch
     if plotting || JoyMainSwitch
         subplot(2,1,1)
         plot(Tid(1:k),u(1:k));
-        title('Vann endring')
+        title('Vann str{\o}m in/ut av ballongen')
         ylabel('Vann')
 
         subplot(2,1,2)
         plot(Tid(1:k),y(1:k));
-        title('Volum vann i glasset')
+        title('Ballong volum')
         xlabel('Tid [sek]')
         ylabel('Vann [cl]')
 
