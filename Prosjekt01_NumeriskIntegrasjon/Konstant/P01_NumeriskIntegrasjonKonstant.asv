@@ -184,7 +184,7 @@ subplot(2,1,1)
 hold on
 plot(Tid,u_est)
 legend('$\{u_k\}$',...
-['$u(t)=',num2str(U) '\sin( ' ,num2str(w), 't), $'])
+['$u(t)=',num2str(U)\sin(',num2str(w),' t), $'])
 subplot(2,1,2)
 hold on
 plot(Tid,y_est)

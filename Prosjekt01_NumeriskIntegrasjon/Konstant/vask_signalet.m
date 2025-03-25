@@ -1,7 +1,7 @@
-filename = 'P01_chirp.mat'; 
+filename = 'P01_NumeriskIntegrasjonKonstant.mat'; 
 load(filename)
-elementer_vaskes_start = 1;
-elementer_vaskes_slutt = 93;
+%elementer_vaskes_start = 1;
+%elementer_vaskes_slutt = 93;
 
 %element_tid_start = Tid(1);
 
@@ -9,12 +9,12 @@ elementer_vaskes_slutt = 93;
 %    Tid(i) = Tid(i) - element_tid_start;
 %end
     
-Tid = [Tid(elementer_vaskes_start:elementer_vaskes_slutt)];
-Lys = [Lys(elementer_vaskes_start:elementer_vaskes_slutt)];
+%Tid = [Tid(elementer_vaskes_start:elementer_vaskes_slutt)];
+%Lys = [Lys(elementer_vaskes_start:elementer_vaskes_slutt)];
 likevekst_verdi = mean(Lys, "omitnan");
 
 Lys = Lys - likevekst_verdi;
-Tid = Tid - Tid(1);
+%Tid = Tid - Tid(1);
 
 %for i = 1:76 
 %    Lys(i) = Lys(i) - likevekst_verdi;
@@ -22,4 +22,4 @@ Tid = Tid - Tid(1);
 
 
 plot(Tid, Lys)
-save('P01_chirp_justert.mat','Tid','Lys')
+save('P01_NumeriskIntegrasjonKonstant_ny.mat','Tid','Lys')

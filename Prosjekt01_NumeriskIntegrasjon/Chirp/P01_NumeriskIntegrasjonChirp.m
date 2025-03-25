@@ -69,7 +69,7 @@ while ~JoyMainSwitch
         else
             Tid(k) = toc;
             if Tid(k) > 2
-                padrag = padrag + ((100/13))*(Tid(k)-Tid(k-1));
+                padrag = padrag + (100/13)*(Tid(k)-Tid(k-1));
             end
         end
 
@@ -146,7 +146,7 @@ while ~JoyMainSwitch
         subplot(2,1,1)
         plot(Tid(1:k),u(1:k));
         title('Vann str{\o}m in/ut av ballongen')
-        ylabel('Vann')
+        ylabel('Vann [cl/s]')
 
         subplot(2,1,2)
         plot(Tid(1:k),y(1:k));
@@ -167,34 +167,3 @@ if online
     % de sensorene og motoren som ikke brukes.
     stop(motorA);
 end
-
-
-subplot(2,1,1)
-legend('$\{u_k\}')
-
-%subplot(2,1,2)
-%legend('..')
-
-
-%t = T_s(1);
-%U = 11;
-%w = 3.4;
-
-
-%u_est = U*sin(w*Tid);
-%Y = U/w;
-%y_A = U/w + y(1);
-%phi = -pi/2;
-%y_est = Y*sin(w*Tid + phi) + y_A;
-
-
-subplot(2,1,1)
-hold on
-plot(Tid,u_est)
-%legend('$\{u_k\}$',...
-%['$u(t)=',num2str(U)\sin(',num2str(w),' t), '$'])
-subplot(2,1,2)
-hold on
-plot(Tid,y_est)
-legend('$\{y_k\}$', ['$y(t)=',num2str(Y),...
-'\sin(',num2str(w),' t- \pi/2) + ',num2str(y_A),'$'])
