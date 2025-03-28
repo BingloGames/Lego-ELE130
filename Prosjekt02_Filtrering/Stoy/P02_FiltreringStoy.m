@@ -1,21 +1,21 @@
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-% P01_NumeriskIntegrasjonKonstant
+% P02_FiltreringStoy
 %
-% Hensikten med programmet er å numerisk integrere målesignal u_k som
-% representere strømning [cl/s] til å beregne y_k som volum [cl]
+% Hensikten med programmet er å lavpassfiltrere målesignalet u_k som
+% representere temperaturmåling [C]
 % 
 % Følgende sensorer brukes:
 % - Lyssensor
 %--------------------------------------------------------------------------
 
-%110
+
 %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %         EXPERIMENT SETUP, FILENAME AND FIGURE
 
 clear; close all   % Alltid lurt å rydde workspace opp først
 online = false;     % Online mot EV3 eller mot lagrede data?
 plotting = false;  % Skal det plottes mens forsøket kjøres
-filename = 'P01_sinus_ny_ny.mat';
+filename = 'P02_LysTid_Stoy_filtrert.mat'; 
 
 if online
     
@@ -28,12 +28,9 @@ if online
     myColorSensor = colorSensor(mylego);
     
     % motorer
-    motorA = motor(mylego,'A');
-    motorA.resetRotation;
 
 else
     % Dersom online=false lastes datafil.
-    
     load(filename)
 end
 
@@ -68,12 +65,9 @@ while ~JoyMainSwitch
         % sensorer
         Lys(k) = double(readLightIntensity(myColorSensor,'reflected'));
 
-        VinkelPosMotorA(k) = double(motorA.readRotation);
-
         % Data fra styrestikke. 
         [JoyAxes,JoyButtons] = HentJoystickVerdier(joystick);
         JoyMainSwitch = JoyButtons(1);
-        JoyForover(k) = JoyAxes(2);
         
     else
         % Når k er like stor som antall elementer i datavektoren Tid,
@@ -96,34 +90,29 @@ while ~JoyMainSwitch
     % Gjør matematiske beregninger og motorkraftberegninger.
 
     % Tilordne målinger til variabler
-    LysInit = Lys(1);
     u(k) = Lys(k);
 
     if k==1
         % Spesifisering av initialverdier og parametere
         T_s(1) = 0.05;  % nominell verdi
-        y(1) = u(1);
+        y(1) = 0;
     else
         % Beregninger av T_s(k) og andre variable
         T_s(k) = Tid(k)-Tid(k-1);
-        y(k) = y(k-1) + T_s(k)*(1/2)*(u(k-1)+u(k));
 
+
+        %knekk_frekvense = 1; %endre til riktig verdi
+        tidskonstant = 1.8;
+
+
+        alfa = 1-exp(-T_s(k)/tidskonstant);
+
+
+        y(k) = (1-alfa)*y(k-1)+alfa*u(k);
     end
 
-    % beregning av pådrag fra styrestikken
-    %u_A(k) = JoyForover(k);
 
-    if online
-        % Setter pådragsdata mot EV3
-        % (slett de motorene du ikke bruker)
-        motorA.Speed = 30;%u_A(k);
-        start(motorA)
-    end
-    
-    
     %--------------------------------------------------------------
-
-    
 
 
     %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -135,16 +124,17 @@ while ~JoyMainSwitch
 
     % Plotter enten i sann tid eller når forsøk avsluttes
     if plotting || JoyMainSwitch
-        subplot(2,1,1)
         plot(Tid(1:k),u(1:k));
-        title('Vann endring')
-        ylabel('Vann [cl/s]')
+        %legend('Temperatur Målt')
+        hold on
+        %plot(Tid(1:k),y(1:k));
+        title('Temperatur')
+        ylabel('Temperatur [C]')
+        xlabel('Tid [s]')
+        hold off
 
-        subplot(2,1,2)
-        plot(Tid(1:k),y(1:k));
-        title('Volum vann i glasset')
-        xlabel('Tid [sek]')
-        ylabel('Vann [cl]')
+        
+        %legend('temperatur Vist')
 
         % tegn nå (viktig kommando)
         drawnow
@@ -154,39 +144,4 @@ while ~JoyMainSwitch
 end
 
 
-if online
-    % For ryddig og oversiktlig kode, er det lurt aa slette
-    % de sensorene og motoren som ikke brukes.
-    stop(motorA);
-end
-
-
-subplot(2,1,1)
-legend('$\{u_k\}')
-
-subplot(2,1,2)
-legend('..')
-
-
-t = T_s(1);
-U = 11;
-w = 3.4;
-
-
-u_est = U*sin(w*Tid);
-Y = U/w;
-y_A = U/w + y(1);
-phi = -pi/2;
-y_est = Y*sin(w*Tid + phi) + y_A;
-
-
-subplot(2,1,1)
-hold on
-plot(Tid,u_est)
-legend('$\{u_k\}$',...
-['$u(t)=',num2str(U)\sin(',num2str(w),' t), $'])
-subplot(2,1,2)
-hold on
-plot(Tid,y_est)
-legend('$\{y_k\}$', ['$y(t)=',num2str(Y),...
-'\sin(',num2str(w),' t- \pi/2) + ',num2str(y_A),'$'])
+%legend('$\{u_k\}')
