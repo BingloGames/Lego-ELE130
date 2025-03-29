@@ -15,7 +15,7 @@
 clear; close all   % Alltid lurt å rydde workspace opp først
 online = false;     % Online mot EV3 eller mot lagrede data?
 plotting = false;  % Skal det plottes mens forsøket kjøres
-filename = 'P02_LysTid_Stoy_filtrert.mat'; 
+filename = 'P02_LysTid_Stoy_filtrert_med_stoy.mat'; 
 
 if online
     
@@ -95,16 +95,22 @@ while ~JoyMainSwitch
     if k==1
         % Spesifisering av initialverdier og parametere
         T_s(1) = 0.05;  % nominell verdi
-        y(1) = 0;
+        y(1) = u(1);
     else
         % Beregninger av T_s(k) og andre variable
         T_s(k) = Tid(k)-Tid(k-1);
 
 
         %knekk_frekvense = 1; %endre til riktig verdi
+
+        %hoypass filter -------------------------
         tidskonstant = 1.8;
 
 
+        %alfa = exp(-T_s(k)/tidskonstant);
+        %y(k) = (alfa*y(k-1))+alfa*(u(k)-u(k-1));
+
+        %lavpass filter --------------------
         alfa = 1-exp(-T_s(k)/tidskonstant);
 
 
@@ -124,12 +130,13 @@ while ~JoyMainSwitch
 
     % Plotter enten i sann tid eller når forsøk avsluttes
     if plotting || JoyMainSwitch
+        subplot(2,1,1)
         plot(Tid(1:k),u(1:k));
         %legend('Temperatur Målt')
         hold on
-        %plot(Tid(1:k),y(1:k));
+        plot(Tid(1:k),y(1:k));
         title('Temperatur')
-        ylabel('Temperatur [C]')
+        ylabel('Temperatur [C$\circ$]')
         xlabel('Tid [s]')
         hold off
 
@@ -144,4 +151,10 @@ while ~JoyMainSwitch
 end
 
 
-%legend('$\{u_k\}')
+%legend('$\{u_k\}
+
+subplot(2,1,2)
+[frekvens, spekter] = FrekvensSpekterSignal(y,Tid)
+
+
+plot(frekvens, spekter)

@@ -95,7 +95,7 @@ while ~JoyMainSwitch
     if k==1
         % Spesifisering av initialverdier og parametere
         T_s(1) = 0.05;  % nominell verdi
-        y(1) = 0;
+        y(1) = u(1);
     else
         % Beregninger av T_s(k) og andre variable
         T_s(k) = Tid(k)-Tid(k-1);
@@ -125,13 +125,16 @@ while ~JoyMainSwitch
     % Plotter enten i sann tid eller når forsøk avsluttes
     if plotting || JoyMainSwitch
         plot(Tid(1:k),u(1:k));
-        legend('Temperatur Målt')
         hold on
+        
+        
+        
         plot(Tid(1:k),y(1:k));
         title('Temperatur')
-        ylabel('Temperatur [C]')
+        ylabel('Temperatur [C$\circ$]')
         xlabel('Tid [s]')
-        legend('temperatur Vist')
+        legend(['$\{u_k\}$, Temperatur M{\aa}lt [C$\circ$]'], ['$\{y_k\}$, Temperatur Filtrert [C$\circ$]'])
+        hold off
 
         % tegn nå (viktig kommando)
         drawnow
