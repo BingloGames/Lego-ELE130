@@ -1,7 +1,7 @@
-filename = 'P02_LysTid_Stoy.mat'; 
+filename = 'P03_sinus.mat'; 
 load(filename)
-elementer_vaskes_start = 65;
-elementer_vaskes_slutt = 612;
+elementer_vaskes_start = 100;
+elementer_vaskes_slutt = 253;
 
 %element_tid_start = Tid(1);
 
@@ -10,7 +10,7 @@ elementer_vaskes_slutt = 612;
 %end
     
 Tid = [Tid(elementer_vaskes_start:elementer_vaskes_slutt)];
-Lys = [Lys(elementer_vaskes_start:elementer_vaskes_slutt)];
+Avstand = [Avstand(elementer_vaskes_start:elementer_vaskes_slutt)];
 %likevekst_verdi = mean(Lys, "omitnan");
 
 %Lys = Lys - likevekst_verdi;
@@ -21,5 +21,5 @@ Tid = Tid - Tid(1);
 %end
 
 
-plot(Tid, Lys)
-save('P02_LysTid_Stoy_filtrert.mat','Tid','Lys')
+plot(Tid, Avstand)
+save('P03_sinus_filtrert.mat','Tid','Avstand')

@@ -16,8 +16,8 @@
 
 clear; close all   % Alltid lurt å rydde workspace opp først
 online = false;    % Online mot EV3 eller mot lagrede data?
-plotting = true;   % Skal det plottes mens forsøket kjøres 
-filename = 'P03_1.mat'; 
+plotting = false;   % Skal det plottes mens forsøket kjøres 
+filename = 'P01_chirp_justert.mat'; 
 
 if online
 
@@ -33,6 +33,7 @@ if online
 else
     % Dersom online=false lastes datafil. 
     load(filename)
+    Avstand = Lys;
 end
 
 fig1=figure;
@@ -92,7 +93,7 @@ while ~JoyMainSwitch
     % Gjør matematiske beregninger og motorkraftberegninger.
    
     % Tilordne målinger til variabler
-    u(k) = 100*Avstand(k);        
+    u(k) = Avstand(k);        
  
     if k==1
         % Spesifisering av initialverdier og parametere
@@ -113,18 +114,23 @@ while ~JoyMainSwitch
         u_f(k) = (1-alfa)*u_f(k-1) + alfa*u(k);
         
 
-        if Bryter(k) == 1
-            v(k) = (u(k)-u(k-1))/T_s(k);
-            v_f(k) = (u_f(k)-u_f(k-1))/T_s(k);
-        else
-            v(k) = 0;
-            v_f(k) = 0;
-        end
+        v(k) = (u(k)-u(k-1))/T_s(k);
+        v_f(k) = (u_f(k)-u_f(k-1))/T_s(k);
         
 
     end
     
     %--------------------------------------------------------------
+    
+    
+    U = 2.25;
+    omega = 2.05;
+    V = U*omega;
+    C = 10.5;
+    phi = pi/2;
+
+    u_f2 = U*sin(omega*Tid) + C;
+    v_f2 = V*sin(omega*Tid+phi);
 
     
     %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -136,27 +142,36 @@ while ~JoyMainSwitch
     
     % Plotter enten i sann tid eller når forsøk avsluttes
     if plotting || JoyMainSwitch
-        subplot(3,1,1)
-        plot(Tid(1:k),u(1:k),'b-');
+        subplot(2,1,1)
+        plot(Tid(1:k),v_f2(1:k),'b-');
+        
         grid
         hold on
 
-        plot(Tid(1:k),u(1:k),'b-');
+        plot(Tid(1:k),u_f2(1:k),'r-');
         hold off
+
+        legend(['$\{v_f2\}$'], ['$\{u_f2\}$'])
+        %subplot(3,1,1)
+        %plot(Tid(1:k),u_f(1:k),'b-');
+        
+        %grid
         
 
-        subplot(3,1,2)
-        plot(Tid(1:k),Bryter(1:k),'k');
-        grid
-        xlabel('Tid [sek]')
+        %subplot(3,1,2)
+        %plot(Tid(1:k),Bryter(1:k),'k');
+        %grid
+        %xlabel('Tid [sek]')
 
 
-        subplot(3,1,3)
-        plot(Tid(1:k),v_f(1:k),'b-');
+        
         grid
+        subplot(2,1,2)
         hold on
-        plot(Tid(1:k),v(1:k),'b-');
-        grid
+        plot(Tid(1:k),v(1:k),'r-');
+        plot(Tid(1:k),v_f(1:k),'b-');
+
+        legend(['$\{v_k\}$'], ['$\{v_f,k\}$'])
 
         hold off
 
@@ -177,7 +192,7 @@ if online
 
 end
 %------------------------------------------------------------------
-
+PlotAltOmFilter()
 %subplot(2,1,1)
 %legend('$\{u_k\}$')
 %subplot(2,1,2)
