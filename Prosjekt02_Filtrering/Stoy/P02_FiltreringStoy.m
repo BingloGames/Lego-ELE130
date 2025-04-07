@@ -96,7 +96,7 @@ while ~JoyMainSwitch
         % Spesifisering av initialverdier og parametere
         T_s(1) = 0.05;  % nominell verdi
         y_lav(1) = u(1);
-        y_hoy(1) = u(1);
+        y_hoy(1) = 0;
     else
         % Beregninger av T_s(k) og andre variable
         T_s(k) = Tid(k)-Tid(k-1);
@@ -105,7 +105,8 @@ while ~JoyMainSwitch
         %knekk_frekvense = 1; %endre til riktig verdi
 
         %hoypass filter -------------------------
-        tidskonstant = 0.5;
+        knekkfrekvens = 0.6;
+        tidskonstant = 1/(2*pi*knekkfrekvens);
 
 
         alfa_hoy = exp(-T_s(k)/tidskonstant);
@@ -131,15 +132,13 @@ while ~JoyMainSwitch
 
     % Plotter enten i sann tid eller når forsøk avsluttes
     if plotting || JoyMainSwitch
-        subplot(2,1,1)
-        plot(Tid(1:k),u(1:k));
-        %legend('Temperatur Målt')
+        %subplot(2,1,1)
+        plot(Tid(1:k),u(1:k),'b-');
         hold on
-        plot(Tid(1:k),y_hoy(1:k));
-        plot(Tid(1:k),y_lav(1:k));
-        title('Temperatur')
-        ylabel('Temperatur [C$\circ$]')
-        xlabel('Tid [s]')
+        plot(Tid(1:k),y_hoy(1:k),'r-');
+        plot(Tid(1:k),y_lav(1:k),'k-');
+        title('Lavpass og h{\o}ypass filter')
+        legend(['u(k)'], ['$y_{h{\o}y}$ h{\o}ypassfiltrert, $f_c =', num2str(knekkfrekvens),'$'], ['$y_{lav}$ lavpassfiltrert, $f_c =', num2str(knekkfrekvens),'$'])
         hold off
 
         
@@ -155,9 +154,9 @@ end
 
 %legend('$\{u_k\}
 
-subplot(2,1,2)
+%subplot(2,1,2)
 
-[frekvens, spekter] = FrekvensSpekterSignal(u,Tid)
+%[frekvens, spekter] = FrekvensSpekterSignal(u,Tid);
 
 
-plot(frekvens, spekter)
+%plot(frekvens, spekter)

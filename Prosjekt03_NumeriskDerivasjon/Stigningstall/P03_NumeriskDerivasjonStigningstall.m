@@ -16,7 +16,7 @@
 
 clear; close all   % Alltid lurt å rydde workspace opp først
 online = false;    % Online mot EV3 eller mot lagrede data?
-plotting = true;   % Skal det plottes mens forsøket kjøres 
+plotting = false;   % Skal det plottes mens forsøket kjøres 
 filename = 'P03_1.mat'; 
 
 if online
@@ -100,13 +100,13 @@ while ~JoyMainSwitch
         %u(1) = 40;
         u_f(1) = u(1);
         v(1) = 0;
-        v_f(1) = 0;
+        v_f(1) = v(1);
         
 
     else
         % beregner tidsskritt
         T_s(k) = Tid(k) - Tid(k-1);
-        tidskonstant = 1.8;
+        tidskonstant = 1.6;
         alfa = 1-exp(-T_s(k)/tidskonstant);
 
         
@@ -138,25 +138,34 @@ while ~JoyMainSwitch
     if plotting || JoyMainSwitch
         subplot(3,1,1)
         plot(Tid(1:k),u(1:k),'b-');
+        title("Avstandm{\aa}linger og lavpass-filtrert avstandm{\aa}linger")
+        ylabel("[m]")
         grid
         hold on
 
-        plot(Tid(1:k),u(1:k),'b-');
+        plot(Tid(1:k),u_f(1:k),'r-');
+        legend(["{$u_k$}"], ["{$u_{f,k}$}"])
         hold off
         
 
         subplot(3,1,2)
         plot(Tid(1:k),Bryter(1:k),'k');
+        title("Bryter p{\aa} laserpistolen")
         grid
-        xlabel('Tid [sek]')
+        legend("Brytersignal")
 
 
         subplot(3,1,3)
-        plot(Tid(1:k),v_f(1:k),'b-');
-        grid
-        hold on
         plot(Tid(1:k),v(1:k),'b-');
         grid
+        title("Hastighet beregnet fra avstand og lavpass-filtrert avstand")
+        ylabel("[m/s]")
+        xlabel('Tid [sek]')
+        hold on
+        plot(Tid(1:k),v_f(1:k),'r-');
+        grid
+
+        legend(["{$v_k$}"], ["{$v_{f,k}$}"])
 
         hold off
 
