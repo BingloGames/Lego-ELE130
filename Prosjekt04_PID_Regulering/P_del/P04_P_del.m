@@ -95,8 +95,8 @@ while ~JoyMainSwitch
 
     % parametre
     u0 = 0;
-    Kp = 0;    % start med lave verdier, typisk 0.005
-    Ki = 0.4;      % start med lave verdier, typisk 0.005
+    Kp = 0.1;    % start med lave verdier, typisk 0.005
+    Ki = 0.3;      % start med lave verdier, typisk 0.005
     Kd = 0;      % start med lave verdier, typisk 0.001
     I_max = 100;  % Inf
     I_min = -100; % -Inf
@@ -132,7 +132,7 @@ while ~JoyMainSwitch
 
         % Målingen y er lavpassfiltrert vinkelhastighet
         tau = 0.2;      % tidskonstant til filteret
-        alfa(k)  = 1-exp(-T_s(k)/tau);  % tidsavhengig alfa
+        alfa(k) = 1-exp(-T_s(k)/tau);  % tidsavhengig alfa
         x2_f(k) = (1-alfa(k))*x2_f(k-1) + alfa(k)*x2(k);
         y(k) = x2_f(k);     
 
@@ -150,21 +150,20 @@ while ~JoyMainSwitch
 
         % Lag kode for bidragene P(k), I(k) og D(k)
         P(k) = Kp*e(k);
-        I(k) = (I(k-1)+T_s(k)*(0.5)*(Ki*e(k-1)+Ki*e(k)));
+        I(k) = (I(k-1)+T_s(k)*(0.5)*Ki*(e(k-1)+e(k)));
         tau_PID = 0.2;    % tidskonstant til filteret i PID
-        alfa_PID(k) = 0;
-        e_f(k) = 0;
-        D(k) = 0;
+        alfa_PID(k) = 1-exp(-T_s(k)/tau_PID);
+        e_f(k) = (1-alfa_PID(k))*e_f(k-1)+alfa_PID(k)*e(k);
+        D(k) = Kd*(e_f(k)-e_f(k-1))/T_s(k); %D(k-1)+(Kd*e_f(k)*T_s(k));
     end
     
     % Integratorbegrensing
-    %if I(k) < I_min
-        %I(k) = I_min;
+    if I(k) < I_min
+        I(k) = I_min;
 
-    %elseif I(k) > I_max
-        %I(k) = I_max;
-
-    %end
+    elseif I(k) > I_max
+        I(k) = I_max;
+    end
 
     u_A(k) = u0 + P(k) + I(k) + D(k);
 
