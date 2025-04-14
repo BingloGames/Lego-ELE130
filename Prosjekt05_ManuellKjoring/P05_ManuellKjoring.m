@@ -231,7 +231,7 @@ while ~JoyMainSwitch
         plot(Tid(1:k), r(1:k));
         title('Lys reflektert og referanse')
         xlabel('Tid [sek]')
-        legend(['Lys'], ['r'])
+        legend(['$y_k$'], ['$r_k$'])
         hold off
 
 
@@ -240,7 +240,7 @@ while ~JoyMainSwitch
         hold on
         title('Reguleringsavvik')
         xlabel('Tid [sek]')
-        legend('e')
+        legend('$e_k$')
         hold off
 
 
@@ -249,7 +249,7 @@ while ~JoyMainSwitch
         hold on
         title('MAE')
         xlabel('Tid [sek]')
-        legend('MAE')
+        legend('$MAE_k$')
         hold off
 
 
@@ -258,7 +258,7 @@ while ~JoyMainSwitch
         hold on
         title('IAE')
         xlabel('Tid [sek]')
-        legend('IAE')
+        legend('$IAE_k$')
         hold off
 
 
@@ -268,7 +268,7 @@ while ~JoyMainSwitch
         plot(Tid(1:k),u_C(1:k));
         title('P{\aa}drag motor B og motor C')
         xlabel('Tid [sek]')
-        legend(['u_B'], ['u_C'])
+        legend(['$u_{B,k}$'], ['$u_{C,k}$'])
         hold off
         
 
@@ -279,7 +279,7 @@ while ~JoyMainSwitch
         plot(Tid(1:k),tvc(1:k));
         title('Total Variation')
         xlabel('Tid [sek]')
-        legend(['TVB'], ['TVC'])
+        legend(['$TV_{B,k}$'], ['$TV_{C,k}$'])
         hold off
         
 
@@ -301,9 +301,43 @@ if online
     %stop(motorD);
 
 end
-%------------------------------------------------------------------
 
+middel_ts = mean(T_s)
+return
+%------------------------------------------------------------------
 %subplot(2,2,1)
 %legend('$\{u_k\}$')
+fil_navn = cell(3,1);
+fil_navn{1} = "sebastian_ny.mat";
+fil_navn{2} = "frederik_ny.mat";
+fil_navn{3} = "hassan_ny.mat";
 
+for i = 1:3
+    load(string(fil_navn(i)));
+    y = Lys;
 
+    middel_y = mean(y);
+    standardavvik_y = std(y);
+    
+    
+    subplot(3,1,i)
+    x_prop = histogram(y, length(y));
+    axis([0, 60, 0, inf])
+    hold on
+    
+    
+    xline(middel_y, 'r', 'LineWidth', 3)
+    plot([middel_y, middel_y+standardavvik_y], [3, 3], 'g', LineWidth=3)
+    
+    
+    legend('Lys {$y_k$}', ['Middelverdi $\bar{y}$ = ', num2str(middel_y)], ['Standardavvik $\sigma$ = ', num2str(standardavvik_y)])
+    if i == 1
+        title(['Sebastian'])
+    elseif i == 2
+        title(['Fredrik'])
+    elseif i == 3
+        title(['Hassan'])
+    end
+    hold off
+
+end
