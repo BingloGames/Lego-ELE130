@@ -137,33 +137,33 @@ while ~JoyMainSwitch
     % Husk at syntaksen plot(Tid(1:k),data(1:k))
     % for gir samme opplevelse i online=true og online=false siden
     % hele datasettet (1:end) eksisterer i den lagrede .mat fila
+
+    legend_uf2 = sprintf('$u_f(k) = %.2f \\sin(%.2f t)$', U, omega);
     
     % Plotter enten i sann tid eller når forsøk avsluttes
     if plotting || JoyMainSwitch
-        subplot(3,1,1)
+        subplot(2,1,1)
         plot(Tid(1:k),u_f(1:k),'b-');
-        
-        grid
         hold on
-
         plot(Tid(1:k),u_f2(1:k),'r-');
         hold off
-        
-
-        %subplot(3,1,2)
-        %plot(Tid(1:k),Bryter(1:k),'k');
-        %grid
-        %xlabel('Tid [sek]')
-
-
-        subplot(3,1,3)
         grid
-        hold on
+
+        title('Avstandsm\aa ling', 'Interpreter', 'latex')
+        ylabel('[$m$]')
+        legend('$\{u_f\}$', legend_uf2, 'Interpreter', 'latex')
+
+        legend_vf2 = sprintf('$v_f(k) = %.2f \\cdot \\sin(%.2f t + \\pi / 2)$', V, omega);
+
+        subplot(2,1,2)
         plot(Tid(1:k),v_f(1:k),'b-');
+        hold on
         plot(Tid(1:k),v_f2(1:k),'r-');
-        grid
-
         hold off
+        grid
+        title('Hastighet')
+        ylabel('[$m/s$]')
+        legend('$\{v_f\}$', legend_vf2, 'Interpreter', 'latex')
 
 
 
