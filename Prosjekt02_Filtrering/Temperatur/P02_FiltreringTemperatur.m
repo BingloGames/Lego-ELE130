@@ -13,8 +13,8 @@
 %         EXPERIMENT SETUP, FILENAME AND FIGURE
 
 clear; close all   % Alltid lurt å rydde workspace opp først
-online = false;     % Online mot EV3 eller mot lagrede data?
-plotting = false;  % Skal det plottes mens forsøket kjøres
+online = true;     % Online mot EV3 eller mot lagrede data?
+plotting = true;  % Skal det plottes mens forsøket kjøres
 filename = 'P02_LysTid_1.mat'; 
 
 if online
@@ -53,6 +53,7 @@ while ~JoyMainSwitch
 
     % oppdater tellevariabel
     k=k+1;
+    
 
     if online
         if k==1
@@ -96,18 +97,17 @@ while ~JoyMainSwitch
         % Spesifisering av initialverdier og parametere
         T_s(1) = 0.05;  % nominell verdi
         y(1) = u(1);
+        tidskonstant = 1.8;
+        alfa = 1-exp(-T_s(k)/tidskonstant);
     else
         % Beregninger av T_s(k) og andre variable
         T_s(k) = Tid(k)-Tid(k-1);
 
 
         %knekk_frekvense = 1; %endre til riktig verdi
-        tidskonstant = 1.8;
 
 
         alfa = 1-exp(-T_s(k)/tidskonstant);
-
-
         y(k) = (1-alfa)*y(k-1)+alfa*u(k);
     end
 
