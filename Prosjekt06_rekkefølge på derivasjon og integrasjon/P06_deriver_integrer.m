@@ -37,20 +37,6 @@ if online
 
     % sensorer
     myColorSensor = colorSensor(mylego);    
-    % myTouchSensor = touchSensor(mylego);
-    % mySonicSensor = sonicSensor(mylego);
-    % myGyroSensor  = gyroSensor(mylego);
-    % resetRotationAngle(myGyroSensor);
-
-    % motorer
-    % motorA = motor(mylego,'A');
-    % motorA.resetRotation;
-    % motorB = motor(mylego,'B');
-    % motorB.resetRotation;
-    % motorC = motor(mylego,'C');
-    % motorC.resetRotation;
-    % motorD = motor(mylego,'D');
-    % motorD.resetRotation;
 else
     % Dersom online=false lastes datafil.
     load(filename)
@@ -85,21 +71,6 @@ while ~JoyMainSwitch
 
         % Sensorer, bruk ikke Lys(k) og LysDirekte(k) samtidig
         Lys(k) = double(readLightIntensity(myColorSensor,'reflected'));
-        % LysDirekte(k) = double(readLightIntensity(myColorSensor));
-        % Bryter(k)  = double(readTouch(myTouchSensor));
-        % Avstand(k) = double(readDistance(mySonicSensor));
-        % 
-        % Bruk ikke GyroAngle(k) og GyroRate(k) samtidig
-        % GyroAngle(k) = double(readRotationAngle(myGyroSensor));
-        % GyroRate(k)  = double(readRotationRate(myGyroSensor));
-        %
-        % VinkelPosMotorA(k) = double(motorA.readRotation);
-        % VinkelPosMotorB(k) = double(motorB.readRotation);
-        % VinkelPosMotorC(k) = double(motorC.readRotation);
-        % VinkelPosMotorD(k) = double(motorC.readRotation);
-
-        % Data fra styrestikke. Utvid selv med andre knapper og akser.
-        % Bruk filen joytest.m til å finne koden for knappene og aksene.
         [JoyAxes,JoyButtons] = HentJoystickVerdier(joystick);
         JoyMainSwitch = JoyButtons(1);
         JoyForover(k) = JoyAxes(2);
@@ -148,31 +119,6 @@ while ~JoyMainSwitch
         v_2(k) = (x(k)-x(k-1))/T_s(k);
     end
 
-    % Andre beregninger som ikke avhenger av initialverdi
-
-    % Pådragsberegninger
-    %u_A(k) = a*JoyForover(k);
-    %u_B(k) = ...
-    %u_C(k) = ...
-    %u_D(k) = ...
-
-    % if online
-    %     % Setter pådragsdata mot EV3
-    %     % (slett de motorene du ikke bruker)
-    %     motorA.Speed = u_A(k);
-    %     motorB.Speed = u_B(k);
-    %     motorC.Speed = u_C(k);
-    %     motorD.Speed = u_D(k);
-    % 
-    %     start(motorA)
-    %     start(motorB)
-    %     start(motorC)
-    %     start(motorD)
-    % end
-    %--------------------------------------------------------------
-
-
-
 
     %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     %                  PLOT DATA
@@ -185,40 +131,41 @@ while ~JoyMainSwitch
     if plotting || JoyMainSwitch  
         figure(fig1)
 
-        subplot(3,1,1)
-        plot(Tid(1:k),Lys(1:k));
-        title('Lys reflektert')
-        %xlabel('Tid [sek]')
-
-        subplot(3,1,2)
-        plot(Tid(1:k),a(1:k));
+        subplot(4,1,1)
+        plot(Tid(1:k), u(1:k), 'r');
+        title('Original fart')
         hold on
-        plot(Tid(1:k),v_1(1:k));
+        legend(['$v_k$'])
+        hold off
+        
+
+        subplot(4,1,2)
+        plot(Tid(1:k),a(1:k), 'r');
+        hold on
+        plot(Tid(1:k),v_1(1:k), 'b');
         title('Derivert og s{\aa} integrert')
-        %xlabel('Tid [sek]')
         legend(['$a_k$'],['$v_{1,k}$'])
         hold off
 
-        subplot(3,1,3)
-        plot(Tid(1:k),x(1:k));
+
+        subplot(4,1,3)
+        plot(Tid(1:k),x(1:k), 'r');
         hold on
-        plot(Tid(1:k),v_2(1:k));
+        plot(Tid(1:k),v_2(1:k), 'g');
         title('Integrert og s{\aa} derivert')
         xlabel('Tid [sek]')
         legend(['$x_k$'],['$v_{2,k}$'])
         hold off
-        % 
-        % subplot(2,2,3)
-        % plot(Tid(1:k),VinkelPosMotorB(1:k));
-        % title('Vinkelposisjon motor B')
-        % xlabel('Tid [sek]')
-        % 
-        % subplot(2,2,4)
-        % plot(Tid(1:k),u_B(1:k));
-        % title('P{\aa}drag motor B')
-        % xlabel('Tid [sek]')
 
-        % tegn nå (viktig kommando)
+
+        subplot(4,1,4)
+        plot(Tid(1:k), u(1:k), 'r');
+        title('Fart derivert/integrert frem og tilbake')
+        hold on
+        plot(Tid(1:k),v_1(1:k), 'b--');
+        plot(Tid(1:k),v_2(1:k), 'g--');
+        legend(['$v_k$'],['$v_{1,k}$'], ['$v_{2,k}$'])
+        hold off
         drawnow
     end
     %--------------------------------------------------------------

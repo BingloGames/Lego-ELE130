@@ -261,6 +261,13 @@ fil_navn{1} = "sebastian_ny.mat";
 fil_navn{2} = "frederik_ny.mat";
 fil_navn{3} = "hassan_ny.mat";
 
+
+spekter_min = 0;
+spekter_step = 1;
+spekter_max = 60;
+spekter = spekter_min:spekter_step:spekter_max;
+
+
 for i = 1:3
     load(string(fil_navn(i)));
     y = Lys;
@@ -270,8 +277,8 @@ for i = 1:3
     
     
     subplot(3,1,i)
-    x_prop = histogram(y, length(y));
-    axis([0, 60, 0, 20])
+    x_prop = histogram(y, spekter);
+    axis([0, 60, 0, 25])
     hold on
     
     
