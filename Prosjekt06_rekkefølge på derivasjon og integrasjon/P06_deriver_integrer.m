@@ -153,7 +153,6 @@ while ~JoyMainSwitch
         hold on
         plot(Tid(1:k),v_2(1:k), 'g');
         title('Integrert og s{\aa} derivert')
-        xlabel('Tid [sek]')
         legend(['$x_k$'],['$v_{2,k}$'])
         hold off
 
@@ -165,6 +164,7 @@ while ~JoyMainSwitch
         plot(Tid(1:k),v_1(1:k), 'b--');
         plot(Tid(1:k),v_2(1:k), 'g--');
         legend(['$v_k$'],['$v_{1,k}$'], ['$v_{2,k}$'])
+        xlabel('Tid [sek]')
         hold off
         drawnow
     end
