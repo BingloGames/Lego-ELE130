@@ -43,8 +43,6 @@ JoyMainSwitch=0;
 k=0;
 %----------------------------------------------------------------------
 
-
-
 while ~JoyMainSwitch
 
     %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -91,6 +89,12 @@ while ~JoyMainSwitch
 
     % Tilordne målinger til variabler
     u(k) = Lys(k);
+    y(k) = u(k);
+
+    Ts = mean(diff(Tid));
+    fs = 1/Ts;
+    fc = 0.6;
+    fN = fs/2;
 
     if k==1
         % Spesifisering av initialverdier og parametere
@@ -101,35 +105,31 @@ while ~JoyMainSwitch
         % Beregninger av T_s(k) og andre variable
         T_s(k) = Tid(k)-Tid(k-1);
 
-
-        %knekk_frekvense = 1; %endre til riktig verdi
-
-        %hoypass filter -------------------------
         knekkfrekvens = 0.6;
         tidskonstant = 1/(2*pi*knekkfrekvens);
+
+        orden = 5;
+        [B,A] = butter(orden,fc/fN); % lavpassfilter
+
+        %hoypass filter -------------------------
         alfa_hoy = exp(-T_s(k)/tidskonstant);
+        B_hoy = 1 - alfa_hoy; % høypassfilter
 
-        % fc = knekkfrekvens; % knekkfrekvens i Hz
+        %lavpass filter --------------------
+        alfa_lav = 1-exp(-T_s(k)/tidskonstant);
 
-        % fs = 1/T_s(k); % samplingfrekvens
-        % fN = fs/2; % Nyquistfrekvens
-        % orden = 5;
-
-        % [B,A] = butter(orden, fc/fN); % lavpassfilter
-        
         y_hoy(k) = (alfa_hoy*y_hoy(k-1))+alfa_hoy*(u(k)-u(k-1));
 
         %lavpass filter --------------------
         alfa_lav = 1-exp(-T_s(k)/tidskonstant);
 
-
         y_lav(k) = (1-alfa_lav)*y_lav(k-1)+alfa_lav*u(k);
-
 
     end
 
-    % PlotAltOmFilter(u(1:k),y_lav(1:k), T_s, B, A, fc, fig1);
-
+    % FrekvensSpekterSignal(u,Tid, 'fre'); % plotter frekvensspekteret av signalet u(k)
+    
+    
 
     %--------------------------------------------------------------
 
@@ -143,29 +143,39 @@ while ~JoyMainSwitch
 
 
     % % Plotter enten i sann tid eller når forsøk avsluttes
-    if plotting || JoyMainSwitch
-        %subplot(2,1,1)
-        plot(Tid(1:k),u(1:k),'b-');
-        hold on
-        plot(Tid(1:k),y_hoy(1:k),'r-');
-        plot(Tid(1:k),y_lav(1:k),'k-');
-        title('Lavpass og h{\o}ypass filter')
-        legend(['u(k)'], ['$y_{h{\o}y}$ h{\o}ypassfiltrert, $f_c =', num2str(knekkfrekvens),'$'], ['$y_{lav}$ lavpassfiltrert, $f_c =', num2str(knekkfrekvens),'$'])
-        hold off
+    % if plotting || JoyMainSwitch
+    %     %subplot(2,1,1)
+    %     plot(Tid(1:k),u(1:k),'b-');
+    %     hold on
+    %     plot(Tid(1:k),y_hoy(1:k),'r-');
+    %     plot(Tid(1:k),y_lav(1:k),'k-');
+    %     title('Lavpass og h{\o}ypass filter')
+    %     legend(['u(k)'], ['$y_{h{\o}y}$ h{\o}ypassfiltrert, $f_c =', num2str(knekkfrekvens),'$'], ['$y_{lav}$ lavpassfiltrert, $f_c =', num2str(knekkfrekvens),'$'])
+    %     hold off
 
-        % tegn nå (viktig kommando)
-        drawnow
-    end
-    % %--------------------------------------------------------------
+    %     % tegn nå (viktig kommando)
+    %     drawnow
+    % end
+    % % %--------------------------------------------------------------
 
 end
+
+%bruk av GenereltIIRFilter-funksjonen sammen med PLotAltOmFilter-funksjonen for å 
+% vise resultatene av filtreringen
+y(1) = u(1);
+for k = 2:length(Tid)
+    y(k) = GenereltIIRFilter(u(1:k),y(1:k-1), B, A);
+end
+
+PlotAltOmFilter(u, y, Tid, B, A, fc)
+
 
 
 %legend('$\{u_k\}
 
 %subplot(2,1,2)
 
-%[frekvens, spekter] = FrekvensSpekterSignal(u,Tid);
+% [frekvens, spekter] = FrekvensSpekterSignal(u,Tid);
 
 
-%plot(frekvens, spekter)
+% plot(frekvens, spekter)
