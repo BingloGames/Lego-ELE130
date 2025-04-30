@@ -15,7 +15,7 @@
 clear; close all   % Alltid lurt å rydde workspace opp først
 online = false;     % Online mot EV3 eller mot lagrede data?
 plotting = false;  % Skal det plottes mens forsøket kjøres
-filename = 'P01_sinus_ny_ny.mat';
+filename = 'P01_NumeriskIntegrasjonKonstant_ny.mat';
 
 if online
     
@@ -137,12 +137,14 @@ while ~JoyMainSwitch
     if plotting || JoyMainSwitch
         subplot(2,1,1)
         plot(Tid(1:k),u(1:k));
+        legend(['$u_k$'])
         title('Vann endring')
         ylabel('Vann [cl/s]')
 
         subplot(2,1,2)
         plot(Tid(1:k),y(1:k));
         title('Volum vann i glasset')
+        legend(['$y_k$'])
         xlabel('Tid [sek]')
         ylabel('Vann [cl]')
 
@@ -160,6 +162,7 @@ if online
     stop(motorA);
 end
 
+return
 
 subplot(2,1,1)
 legend('$\{u_k\}')

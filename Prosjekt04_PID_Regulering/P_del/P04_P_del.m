@@ -13,9 +13,9 @@
 %         EXPERIMENT SETUP, FILENAME AND FIGURE
 
 clear; close all   % Alltid lurt å rydde workspace opp først
-online = true;     % Online mot EV3 eller mot lagrede data?
+online = false;     % Online mot EV3 eller mot lagrede data?
 plotting = true;  % Skal det plottes mens forsøket kjøres 
-filename = 'P04_tekst.mat'; % Navnet på datafilen når online=0.
+filename = 'test.mat'; % Navnet på datafilen når online=0.
 
 if online  
    mylego = legoev3('USB');
@@ -96,7 +96,7 @@ while ~JoyMainSwitch
     % parametre
     u0 = 0;
     Kp = 0;    % start med lave verdier, typisk 0.005
-    Ki = 0.1;      % start med lave verdier, typisk 0.005
+    Ki = 0.3;      % start med lave verdier, typisk 0.005
     Kd = 0;      % start med lave verdier, typisk 0.001
     I_max = 100;
     I_min = -100;
@@ -150,10 +150,16 @@ while ~JoyMainSwitch
         e(k) = r(k)-y(k);
 
         % Lag kode for bidragene P(k), I(k) og D(k)
-        P(k) = 0;
-        I(k) = I(k-1) + T_s(k) * 0.5 * (e(k-1) + e(k)) * Ki;
-        e_f(k) = 0;
-        D(k) = 0;
+    oppgave3_derivasjon
+        %P(k) = Kp*e(k);
+        %I(k) = (I(k-1)+T_s(k)*(0.5)*Ki*(e(k-1)+e(k)));
+        tau_PID = 0.2;    % tidskonstant til filteret i PID
+        alfa_PID(k) = 1-exp(-T_s(k)/tau_PID);
+        %e_f(k) = (1-alfa_PID(k))*e_f(k-1)+alfa_PID(k)*e(k);
+        %D(k) = Kd*(e_f(k)-e_f(k-1))/T_s(k);
+
+        
+        [P(k), I(k), D(k), e_f(k)] = MinPID(I(k-1), e_f(k-1), e(k-1:k), T_s(k), [Kp, Ki, Kd, I_max, I_min, alfa_PID(k)]);
     end
     
     % Integratorbegrensing

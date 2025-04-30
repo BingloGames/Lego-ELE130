@@ -25,11 +25,6 @@ plotting = false;  % Skal det plottes mens forsøket kjøres
 filename = 'hassan_ny.mat';  % Data ved offline
 
 if online
-    % Initialiser styrestikke, sensorer og motorer. Dersom du bruker 
-    % 2 like sensorer, må du initialisere med portnummer som argument som:
-    % mySonicSensor_1 = sonicSensor(mylego,3);
-    % mySonicSensor_2 = sonicSensor(mylego,4);
-    
     % LEGO EV3 og styrestikke
     mylego = legoev3('USB');
     joystick = vrjoystick(1);
@@ -37,20 +32,12 @@ if online
 
     % sensorer
     myColorSensor = colorSensor(mylego);    
-    % myTouchSensor = touchSensor(mylego);
-    mySonicSensor = sonicSensor(mylego);
-    myGyroSensor  = gyroSensor(mylego);
-    % resetRotationAngle(myGyroSensor);
 
     % motorer
-    % motorA = motor(mylego,'A');
-    % motorA.resetRotation;
     motorB = motor(mylego,'B');
     motorB.resetRotation;
     motorC = motor(mylego,'C');
     motorC.resetRotation;
-    % motorD = motor(mylego,'D');
-    % motorD.resetRotation;
 else
     % Dersom online=false lastes datafil.
     load(filename)
@@ -85,18 +72,9 @@ while ~JoyMainSwitch
 
         % Sensorer, bruk ikke Lys(k) og LysDirekte(k) samtidig
         Lys(k) = double(readLightIntensity(myColorSensor,'reflected'));
-        % LysDirekte(k) = double(readLightIntensity(myColorSensor));
-        % Bryter(k)  = double(readTouch(myTouchSensor));
-        Avstand(k) = double(readDistance(mySonicSensor));
-        % 
-        % Bruk ikke GyroAngle(k) og GyroRate(k) samtidig
-        GyroAngle(k) = double(readRotationAngle(myGyroSensor));
-        % GyroRate(k)  = double(readRotationRate(myGyroSensor));
-        %
-        % VinkelPosMotorA(k) = double(motorA.readRotation);
         VinkelPosMotorB(k) = double(motorB.readRotation);
         VinkelPosMotorC(k) = double(motorC.readRotation);
-        % VinkelPosMotorD(k) = double(motorC.readRotation);
+        
 
         % Data fra styrestikke. Utvid selv med andre knapper og akser.
         % Bruk filen joytest.m til å finne koden for knappene og aksene.
@@ -139,7 +117,7 @@ while ~JoyMainSwitch
         mae(1) = abs(e(1));
 
         a = 0.5; 
-        b = 0.5;% eksempelparameter
+        b = 0.5;
         c = 0.5;
         d = -0.5;
     else
@@ -158,47 +136,23 @@ while ~JoyMainSwitch
         
     end
 
-    
-    
-
-
-    % Andre beregninger som ikke avhenger av initialverdi
-
-
-    
-    
-
-
-    % Pådragsberegninger
-    
 
     if online
-        if y(k) > 50
-           %stop(motorA);
+        if y(k) > 50 %sjekker om roboten har gått utenfor bannen
            stop(motorB);
            stop(motorC);
-           %stop(motorD);
-           %error("for lyst")
            return
         end
-        % Setter pådragsdata mot EV3
-        % (slett de motorene du ikke bruker)
-        %motorA.Speed = u_A(k);
-        %u_A(k) = a*JoyForover(k);
         u_B(k) = b*JoyForover(k)+a*JoySide(k);
         u_C(k) = c*JoyForover(k)+d*JoySide(k);
-        %u_D(k) = d*JoySide(k);
-
 
 
         motorB.Speed = u_B(k);
         motorC.Speed = u_C(k);
-       % motorD.Speed = u_D(k);
 
-        %start(motorA)
+
         start(motorB)
         start(motorC)
-       % start(motorD)
     end
     %--------------------------------------------------------------
 
@@ -293,24 +247,26 @@ end
 % +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 %               STOP MOTORS
 if online
-    % For ryddig og oversiktlig kode, kan det være lurt å slette
-    % de sensorene og motoren som ikke brukes.
-    %stop(motorA);
     stop(motorB);
     stop(motorC);
-    %stop(motorD);
-
 end
 
 middel_ts = mean(T_s)
-return
+%return
 %------------------------------------------------------------------
-%subplot(2,2,1)
-%legend('$\{u_k\}$')
+% plot lys, gjennomsnitt og standardavvik
+
 fil_navn = cell(3,1);
 fil_navn{1} = "sebastian_ny.mat";
 fil_navn{2} = "frederik_ny.mat";
 fil_navn{3} = "hassan_ny.mat";
+
+
+spekter_min = 0;
+spekter_step = 1;
+spekter_max = 60;
+spekter = spekter_min:spekter_step:spekter_max;
+
 
 for i = 1:3
     load(string(fil_navn(i)));
@@ -321,8 +277,8 @@ for i = 1:3
     
     
     subplot(3,1,i)
-    x_prop = histogram(y, length(y));
-    axis([0, 60, 0, inf])
+    x_prop = histogram(y, spekter);
+    axis([0, 60, 0, 25])
     hold on
     
     
@@ -339,5 +295,4 @@ for i = 1:3
         title(['Hassan'])
     end
     hold off
-
 end

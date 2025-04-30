@@ -15,8 +15,8 @@
 %         EXPERIMENT SETUP, FILENAME AND FIGURE
 
 clear; close all   % Alltid lurt å rydde workspace opp først
-online = false;    % Online mot EV3 eller mot lagrede data?
-plotting = false;   % Skal det plottes mens forsøket kjøres 
+online = true;    % Online mot EV3 eller mot lagrede data?
+plotting = true;   % Skal det plottes mens forsøket kjøres 
 filename = 'P03_1.mat'; 
 
 if online
