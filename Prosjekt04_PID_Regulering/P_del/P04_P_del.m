@@ -98,8 +98,9 @@ while ~JoyMainSwitch
     Kp = 0;    % start med lave verdier, typisk 0.005
     Ki = 0.3;      % start med lave verdier, typisk 0.005
     Kd = 0;      % start med lave verdier, typisk 0.001
-    I_max = 100;  % Inf
-    I_min = -100; % -Inf
+    I_max = 100;
+    I_min = -100;
+    alfa = 1;   
 
     if k==1
         % Initialverdier
@@ -128,11 +129,12 @@ while ~JoyMainSwitch
         % x1: vinkelposisjon og 
         % x2: vinkelhastighet (derivert av posisjon)
         x1(k) = VinkelPosMotorA(k);
-        x2(k) = (x1(k)-x1(k-1))/T_s(k);
+        x2(k) = (x1(k)-x(k-1))/T_s(k);
 
         % Målingen y er lavpassfiltrert vinkelhastighet
+        fc = ;
         tau = 0.2;      % tidskonstant til filteret
-        alfa(k) = 1-exp(-T_s(k)/tau);  % tidsavhengig alfa
+        alfa(k)  = 1-exp(-T_s(k)/tau);  % tidsavhengig alfa
         x2_f(k) = (1-alfa(k))*x2_f(k-1) + alfa(k)*x2(k);
         y(k) = x2_f(k);     
 
@@ -144,11 +146,11 @@ while ~JoyMainSwitch
                 r(k) = RefVerdier(i);
             end
         end
-
         % Reguleringssavvik
         e(k) = r(k)-y(k);
 
         % Lag kode for bidragene P(k), I(k) og D(k)
+    oppgave3_derivasjon
         %P(k) = Kp*e(k);
         %I(k) = (I(k-1)+T_s(k)*(0.5)*Ki*(e(k-1)+e(k)));
         tau_PID = 0.2;    % tidskonstant til filteret i PID
@@ -161,11 +163,10 @@ while ~JoyMainSwitch
     end
     
     % Integratorbegrensing
-    if I(k) < I_min
-        I(k) = I_min;
-
-    elseif I(k) > I_max
+    if I(k) > I_max
         I(k) = I_max;
+    elseif I(k) < I_min
+        I(k) = I_min;
     end
 
     u_A(k) = u0 + P(k) + I(k) + D(k);
@@ -190,6 +191,7 @@ while ~JoyMainSwitch
         subplot(3,1,1)
         plot(Tid(1:k),r(1:k),'r-');
         hold on
+        plot(Tid(1:k),x2(1:k),'g-');
         plot(Tid(1:k),y(1:k),'b-');
         hold off
         grid
@@ -208,11 +210,11 @@ while ~JoyMainSwitch
         ylabel('[$^{\circ}$/s]')
 
         subplot(3,1,3)
-        plot(Tid(1:k),P(1:k),'c-');
+        plot(Tid(1:k),P(1:k),'b-');
         hold on
         plot(Tid(1:k),I(1:k),'r-');
         plot(Tid(1:k),D(1:k),'g-');        
-        plot(Tid(1:k),u_A(1:k),'k--');
+        plot(Tid(1:k),u_A(1:k),'k-');
         hold off
         grid
         title('Bidragene P, I, og D og totalp{\aa}drag $u(t)$')
@@ -236,7 +238,7 @@ end
 subplot(3,1,1)
 legend('$r(t)$','$y(t)$')
 subplot(3,1,2)
-legend('$e(t)$','$e_f(t)$')
+legend('$e(t)$',['$e_f(t)$, $\alpha$=',num2str(alfa)])
 subplot(3,1,3)
 legend(['P-del, $K_p$=',num2str(Kp)],...
     ['I-del,  $K_i$=',num2str(Ki)],...

@@ -142,16 +142,16 @@ while ~JoyMainSwitch
     
     % Plotter enten i sann tid eller når forsøk avsluttes
     if plotting || JoyMainSwitch
-        subplot(2,1,1)
-        plot(Tid(1:k),v_f2(1:k),'b-');
+        % subplot(2,1,1)
+        % plot(Tid(1:k),v_f2(1:k),'b-');
         
-        grid
-        hold on
+        % grid
+        % hold on
 
-        plot(Tid(1:k),u_f2(1:k),'r-');
-        hold off
+        % plot(Tid(1:k),u_f2(1:k),'r-');
+        % hold off
 
-        legend(['$\{v_f2\}$'], ['$\{u_f2\}$'])
+        % legend(['$\{v_f2\}$'], ['$\{u_f2\}$'])
         %subplot(3,1,1)
         %plot(Tid(1:k),u_f(1:k),'b-');
         
@@ -165,8 +165,8 @@ while ~JoyMainSwitch
 
 
         
-        grid
-        subplot(2,1,2)
+       
+        subplot(1,1,1)
         hold on
         plot(Tid(1:k),v(1:k),'r-');
         plot(Tid(1:k),v_f(1:k),'b-');

@@ -97,7 +97,6 @@ while ~JoyMainSwitch
     if k==1
         % Spesifisering av initialverdier og parametere
         T_s(1) = 0.01;  % nominell verdi
-        %u(1) = 40;
         u_f(1) = u(1);
         v(1) = 0;
         v_f(1) = 0;
@@ -106,21 +105,19 @@ while ~JoyMainSwitch
     else
         % beregner tidsskritt
         T_s(k) = Tid(k) - Tid(k-1);
-        tidskonstant = 1.8;
+        knekkfrekvens = 0.32;
+        tidskonstant = 1/(2*pi*knekkfrekvens);
         alfa = 1-exp(-T_s(k)/tidskonstant);
 
-        
+        % beregner u_f(k) og v_f(k)
         u_f(k) = (1-alfa)*u_f(k-1) + alfa*u(k);
-        
-
-        v(k) = (u(k)-u(k-1))/T_s(k);
         v_f(k) = (u_f(k)-u_f(k-1))/T_s(k);
         
 
     end
 
-    U = 2.25;
-    omega = 2.05;
+    U = 6.4;
+    omega = 2*pi/3;
     V = U*omega;
     C = 10.5;
     phi = pi/2;
@@ -128,7 +125,9 @@ while ~JoyMainSwitch
     u_f2 = U*sin(omega*Tid) + C;
     v_f2 = V*sin(omega*Tid+phi);
     
+    
     %--------------------------------------------------------------
+
 
     
     %++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -172,7 +171,7 @@ while ~JoyMainSwitch
         %--------------------------------------------------------------
     end        
 end
-
+FrekvensSpekterSignal(u_f, Tid, 'signal u_f')
 
 
 % +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
