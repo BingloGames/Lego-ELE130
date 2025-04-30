@@ -146,7 +146,6 @@ while ~JoyMainSwitch
                 r(k) = RefVerdier(i);
             end
         end
-
         % Reguleringssavvik
         e(k) = r(k)-y(k);
 
